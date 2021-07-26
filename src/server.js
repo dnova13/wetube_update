@@ -1,32 +1,27 @@
 import express from "express";
-import morgan from "morgan";
 
 const PORT = 4000;
 
 const app = express();
-const logger = morgan("dev");
-app.use(logger);
 
-// 익스프레스에서 라우터 객체 형성 
-const globalRouter = express.Router();
-// req, res 함수 형성(api)
-const handleHome = (req, res) => res.send("Home");
-// router path '/' 지정
-globalRouter.get("/", handleHome);
+const handleHome = (req, res) => {
+    return res.send("I still love you.");
+};
+const handleLogin = (req, res) => {
+    return res.send("Login here.");
+};
 
+const handlePost = (req, res) => {
+    return res.send("post res.");
+};
 
-const userRouter = express.Router();
-const handleEditUser = (req, res) => res.send("Edit User");
-userRouter.get("/edit", handleEditUser);
+/// 코드 축약 get 으로 쓸게 정해저 있다면
+// use("path", [함수명]) 쓰지 말고 아래 get 처럼 해도됨.
+app.get("/", handleHome);
+app.get("/login", handleLogin);
+app.post("/post", handlePost); // post 라우터 메소드 핸들
+// 웹창 주소로 안됨. 포스트 맨이랑 확장앱 이용하면 볼수 있음.
 
-
-const videoRouter = express.Router();
-const handleWatchVideo = (req, res) => res.send("Watch Video");
-videoRouter.get("/watch", handleWatchVideo);
-
-app.use("/", globalRouter);
-app.use("/videos", videoRouter);
-app.use("/users", userRouter);
 
 const handleListening = () =>
     console.log(`✅ Server listenting on port http://localhost:${PORT} 🚀`);

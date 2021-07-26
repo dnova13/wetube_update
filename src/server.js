@@ -4,24 +4,17 @@ const PORT = 4000;
 
 const app = express();
 
+const logger = (req, res, next) => {  // 미들웨어 사용할 함수 형성 
+    console.log(`${req.method} ${req.url}`); // `GET /` 로 출력 
+    console.log("1111)");
+    next();
+};
+
 const handleHome = (req, res) => {
-    return res.send("I still love you.");
-};
-const handleLogin = (req, res) => {
-    return res.send("Login here.");
+    return res.send("I love middlewares");
 };
 
-const handlePost = (req, res) => {
-    return res.send("post res.");
-};
-
-/// 코드 축약 get 으로 쓸게 정해저 있다면
-// use("path", [함수명]) 쓰지 말고 아래 get 처럼 해도됨.
-app.get("/", handleHome);
-app.get("/login", handleLogin);
-app.post("/post", handlePost); // post 라우터 메소드 핸들
-// 웹창 주소로 안됨. 포스트 맨이랑 확장앱 이용하면 볼수 있음.
-
+app.get("/", logger, handleHome); // logger() 미들 웨어 요청
 
 const handleListening = () =>
     console.log(`✅ Server listenting on port http://localhost:${PORT} 🚀`);

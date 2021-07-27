@@ -6,10 +6,15 @@ import userRouter from "./routers/userRouter";
 
 const PORT = 4000;
 
+console.log(process.cwd());  /// process.cwd() : 해당 프로젝트 경로 
+
 const app = express();
 const logger = morgan("dev");
-app.use(logger);
 
+app.set("view engine", "pug"); // view engin pug 로 셋팅
+app.set("views", process.cwd() + "/src/views"); // view 파일 경로 셋팅
+
+app.use(logger);
 app.use("/", globalRouter);
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);

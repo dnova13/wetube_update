@@ -1,15 +1,22 @@
 import Video from "../models/Video";
 
-export const home = (req, res) => {
-  console.log("Start");
+/*
+console.log("start")
+Video.find({}, (error, videos) => {
+  return res.render("home", { pageTitle: "Home", videos });
+});
+console.log("finished")
+*/
 
-  // mongo find() 에서 {} : search terms , 이게 비어 있으면 모든 형식을 찾음.
-  // find() == find({})
-  Video.find({}, (error, videos) => {
-    console.log("Finished");
+// asyn await : 동기적 방식.
+export const home = async (req, res) => {
+  
+  try {
+    const videos = await Video.find({});
     return res.render("home", { pageTitle: "Home", videos });
-  });
-  console.log("I finish first");
+  } catch (error) {
+    // return res.render("server-error");
+  }
 };
 export const watch = (req, res) => {
   const { id } = req.params;

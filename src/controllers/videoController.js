@@ -3,7 +3,8 @@ import Video from "../models/Video";
 export const home = (req, res) => {
   console.log("Start");
 
-  // 
+  // mongo find() 에서 {} : search terms , 이게 비어 있으면 모든 형식을 찾음.
+  // find() == find({})
   Video.find({}, (error, videos) => {
     console.log("Finished");
     return res.render("home", { pageTitle: "Home", videos });

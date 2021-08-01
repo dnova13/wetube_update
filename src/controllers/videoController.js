@@ -46,7 +46,7 @@ export const postUpload = async (req, res) => {
   } catch (error) {
     return res.render("upload", {
       pageTitle: "Upload Video",
-      errorMessage: error._message, // 에러 메세지 보냄.
+      errorMessage: error._message,
     });
   }
 };

@@ -11,6 +11,14 @@ const videoSchema = new mongoose.Schema({
   },
 });
 
+/// save 미들웨어
+/// save 인서트 동작때마다 미들웨어 작동.
+videoSchema.pre("save", async function () {
+  this.hashtags = this.hashtags[0]
+    .split(",")
+    .map((word) => (word.startsWith("#") ? word : `#${word}`));
+});
+
 const Video = mongoose.model("Video", videoSchema);
 
 export default Video;

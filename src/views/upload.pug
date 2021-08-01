@@ -1,6 +1,10 @@
 extends base.pug
 
+
 block content
+    //- 에러가 생길 경우 메시지 출력
+    if errorMessage 
+        span=errorMessage
     form(method="POST")
         input(placeholder="Title", required, type="text", name="title")
         input(placeholder="Description", required, type="text", name="description")

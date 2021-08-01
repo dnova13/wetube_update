@@ -13,7 +13,6 @@ console.log("finished")
 
 export const home = async (req, res) => {
   const videos = await Video.find({});
-  console.log(videos)
   return res.render("home", { pageTitle: "Home", videos });
 };
 
@@ -37,37 +36,17 @@ export const getUpload = (req, res) => {
 
 export const postUpload = async (req, res) => {
   const { title, description, hashtags } = req.body;
-
-
-  /* const video = new Video({
-    title: title,
-    description: description,
-    createdAt: Date.now(),
-    hashtags: hashtags.split(",").map((word) => `#${word}`),
-    meta: {
-      views: 0,
-      rating: 0,
-    },
-  }); 
-
-  
-  await Video.create(video)
-
-  // let dbVideo = await video.save();  // 데이터 저장 함수 증 하나.
-  // console.log(dbVideo) */
-
-  // 축약
-  // db 인서트
-  await Video.create({
-    title, ///title: title, title : title 각각의 키와 변수 명이 같은 경우 title 로 줄일 수 있음.
-    description, // description: description, 
-    createdAt: Date.now(),
-    hashtags: hashtags.split(",").map((word) => `#${word}`),
-    meta: {
-      views: 0,
-      rating: 0,
-    },
-  });
-
-  return res.redirect("/");
+  try {
+    await Video.create({
+      title,
+      description,
+      hashtags: hashtags.split(",").map((word) => `#${word}`),
+    });
+    return res.redirect("/");
+  } catch (error) {
+    return res.render("upload", {
+      pageTitle: "Upload Video",
+      errorMessage: error._message, // 에러 메세지 보냄.
+    });
+  }
 };

@@ -11,8 +11,6 @@ const videoSchema = new mongoose.Schema({
   },
 });
 
-// static 형식으로 만들어줌.
-// Video.formatHashtags() 로 사용하기 위해서
 videoSchema.static("formatHashtags", function (hashtags) {
   return hashtags
     .split(",")

@@ -58,3 +58,12 @@ export const postUpload = async (req, res) => {
     });
   }
 };
+
+// del video 컨트롤러 추가
+export const deleteVideo = async (req, res) => {
+  const { id } = req.params;
+
+  // findByIdAndDelete(id) === findOneAndDelete({_id, id}) 와는 같다.
+  await Video.findByIdAndDelete(id);
+  return res.redirect("/");
+};

@@ -1,7 +1,9 @@
 import Video from "../models/Video";
 
 export const home = async (req, res) => {
-  const videos = await Video.find({});
+  
+  // 몽구스 sort() 이용해서 정렬 기능 추가, 정렬 종류 asc, desc
+  const videos = await Video.find({}).sort({ createdAt: "desc" });
   return res.render("home", { pageTitle: "Home", videos });
 };
 
@@ -59,11 +61,25 @@ export const postUpload = async (req, res) => {
   }
 };
 
-// del video 컨트롤러 추가
 export const deleteVideo = async (req, res) => {
   const { id } = req.params;
-
-  // findByIdAndDelete(id) === findOneAndDelete({_id, id}) 와는 같다.
   await Video.findByIdAndDelete(id);
   return res.redirect("/");
+};
+
+
+// 검색 컨트롤러 추가
+export const search = async (req, res) => {
+  const { keyword } = req.query;
+  let videos = [];
+  
+  // 검색 키워드가 있을 경우 검색
+  if (keyword) {
+    videos = await Video.find({
+      title: {
+        $regex: new RegExp(`${keyword}$`, "i"),
+      },
+    });
+  }
+  return res.render("search", { pageTitle: "Search", videos });
 };

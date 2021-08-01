@@ -11,10 +11,10 @@ const videoSchema = new mongoose.Schema({
   },
 });
 
-/// save 미들웨어
-/// save 인서트 동작때마다 미들웨어 작동.
-videoSchema.pre("save", async function () {
-  this.hashtags = this.hashtags[0]
+// static 형식으로 만들어줌.
+// Video.formatHashtags() 로 사용하기 위해서
+videoSchema.static("formatHashtags", function (hashtags) {
+  return hashtags
     .split(",")
     .map((word) => (word.startsWith("#") ? word : `#${word}`));
 });

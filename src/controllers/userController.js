@@ -3,8 +3,7 @@ import User from "../models/User";
 export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
 export const postJoin = async (req, res) => {
   const { name, username, email, password, location } = req.body;
-  
-  await User.create({ /// 받은 데이터로 db에 인서트 함.
+  await User.create({
     name,
     username,
     email,

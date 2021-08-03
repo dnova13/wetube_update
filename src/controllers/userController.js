@@ -42,7 +42,11 @@ export const getLogin = (req, res) =>
 
 export const postLogin = async (req, res) => {
   const { username, password } = req.body;
-  const exists = await User.exists({ username });
+
+  // 해당 이름이 db에 존재하는 체크
+  const exists = await User.exists({ username }); 
+
+  // 존재하지 않는다면 존재하지 않는 아이디라고 응답함.
   if (!exists) {
     return res.status(400).render("login", {
       pageTitle: "Login",

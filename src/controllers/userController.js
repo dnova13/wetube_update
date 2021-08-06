@@ -34,10 +34,8 @@ export const postJoin = async (req, res) => {
     });
   }
 };
-
 export const getLogin = (req, res) =>
   res.render("login", { pageTitle: "Login" });
-
 
 export const postLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -45,18 +43,13 @@ export const postLogin = async (req, res) => {
 
   // 패스워드 비교를 위해 아이디로 유저 데이터 들고옴.
   const user = await User.findOne({ username });
-
-  // 존재하지 않는다면 존재하지 않는 아이디라고 응답
   if (!user) {
     return res.status(400).render("login", {
       pageTitle,
       errorMessage: "An account with this username does not exists.",
     });
   }
-
-  // 비밀번호를 비교하기 위해 복호화하여 비교하는 compare 함수 이용
   const ok = await bcrypt.compare(password, user.password);
-
   if (!ok) {
     return res.status(400).render("login", {
       pageTitle,

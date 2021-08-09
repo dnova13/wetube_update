@@ -40,22 +40,28 @@ export const getLogin = (req, res) =>
 export const postLogin = async (req, res) => {
   const { username, password } = req.body;
   const pageTitle = "Login";
-
-  // 패스워드 비교를 위해 아이디로 유저 데이터 들고옴.
   const user = await User.findOne({ username });
+
   if (!user) {
     return res.status(400).render("login", {
       pageTitle,
       errorMessage: "An account with this username does not exists.",
     });
   }
+
   const ok = await bcrypt.compare(password, user.password);
+  
   if (!ok) {
     return res.status(400).render("login", {
       pageTitle,
       errorMessage: "Wrong password",
     });
   }
+
+  // 세션 저장 
+  req.session.loggedIn = true; // 로그인 성공
+  req.session.user = user; // 유저 정보
+  
   return res.redirect("/");
 };
 

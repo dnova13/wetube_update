@@ -23,15 +23,9 @@ app.use(
 
 app.use((req, res, next) => {
   req.sessionStore.all((error, sessions) => {
-    console.log("session",sessions);
-    console.log("header", req.headers);
+    console.log(sessions);
     next();
   });
-});
-
-app.get("/add-one", (req, res, next) => {
-  req.session.potato += 1;
-  return res.send(`add-on : ${req.session.id} - ${req.session.potato}`);
 });
 
 app.use("/", rootRouter);

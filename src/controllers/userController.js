@@ -74,7 +74,6 @@ export const startGithubLogin = (req, res) => {
   return res.redirect(finalUrl);
 };
 
-
 export const finishGithubLogin = async (req, res) => {
   const baseUrl = "https://github.com/login/oauth/access_token";
   const config = {
@@ -96,23 +95,45 @@ export const finishGithubLogin = async (req, res) => {
     })
   ).json();
 
-    // json 내에 access_token 코드 있는지 검사
+   // json 내에 access_token 코드 있는지 검사
   if ("access_token" in tokenRequest) {
     const { access_token } = tokenRequest;
-    
-    // 아까 엑세스 코드를 간략한 코드 복붙으로 유저 정보 캐냄.
-    const userRequest = await (
-      await fetch("https://api.github.com/user", {
+    const apiUrl = "https://api.github.com";
+    const userData = await (
+      await fetch(`${apiUrl}/user`, {
+        headers: {
+          Authorization: `token ${access_token}`,
+        }
+      })
+    ).json();
+
+    console.log(userData);
+
+    // 이메일 데이터만 추출
+    const emailData = await (
+      await fetch(`${apiUrl}/user/emails`, {
         headers: {
           Authorization: `token ${access_token}`,
         },
+        // page: 1,
+        // per_page: 1,
       })
     ).json();
-    console.log(userRequest);
+    
+    console.log(emailData);
+
+    // emailData에서 find() 를 통해 primary, verified 가 true 인지 조건을 찾아 비교.
+    const email = emailData.find(
+      (email) => email.primary === true && email.verified === true
+    );
+    if (!email) {
+      return res.redirect("/login");
+    }
   } else {
     return res.redirect("/login");
   }
 };
+
 
 export const edit = (req, res) => res.send("Edit User");
 export const remove = (req, res) => res.send("Remove User");

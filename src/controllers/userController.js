@@ -41,7 +41,10 @@ export const getLogin = (req, res) =>
 export const postLogin = async (req, res) => {
   const { username, password } = req.body;
   const pageTitle = "Login";
-  const user = await User.findOne({ username });
+
+  // 일반적인 로그인이므로 수정, 소셜 로그인인지 체크할 필요 잇음.
+  const user = await User.findOne({ username, socialOnly: false });
+
   if (!user) {
     return res.status(400).render("login", {
       pageTitle,
@@ -122,26 +125,19 @@ export const finishGithubLogin = async (req, res) => {
     const emailObj = emailData.find(
       (email) => email.primary === true && email.verified === true
     );
-    
+
     if (!emailObj) {
       return res.redirect("/login");
     } else {
 
       // db 작업
       // db 접속하여 같은 이메일 주소가 있는지 검색
-      const existingUser = await User.findOne({ email: emailObj.email });
-      
-      // 잇다면 세션에 로그인 정보 박음
-      if (existingUser) {
-        req.session.loggedIn = true;
-        req.session.user = existingUser;
-        return res.redirect("/");
-      } 
-      
-      // 없을 경우 새로 user 계정 db 만든 후 세션에 박음.
-      // 이때 패스워드 없는 경우, 서드 파티 로그인라는거 추측 가능.
-      else {
-        const user = await User.create({
+      let user = await User.findOne({ email: emailObj.email });
+
+      // 중복된 코드 수정, 코드 간략화
+      if (!user) {
+        user = await User.create({
+          avatarUrl: userData.avatar_url,
           name: userData.name,
           username: userData.login,
           email: emailObj.email,
@@ -149,18 +145,22 @@ export const finishGithubLogin = async (req, res) => {
           socialOnly: true, // 소셜 로그인인지 체크
           location: userData.location,
         });
-        req.session.loggedIn = true;
-        req.session.user = user;
-        return res.redirect("/");
       }
+
+      req.session.loggedIn = true;
+      req.session.user = user;
+      return res.redirect("/");
     }
   } else {
     return res.redirect("/login");
   }
 };
 
+// 로그 아웃 동작 세션 제거 
+export const logout = (req, res) => {
+  req.session.destroy(); 
+  return res.redirect("/");
+};
 
 export const edit = (req, res) => res.send("Edit User");
-export const remove = (req, res) => res.send("Remove User");
-export const logout = (req, res) => res.send("Log out");
 export const see = (req, res) => res.send("See User");

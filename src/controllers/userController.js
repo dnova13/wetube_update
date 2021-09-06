@@ -95,7 +95,7 @@ export const finishGithubLogin = async (req, res) => {
     })
   ).json();
 
-   // json 내에 access_token 코드 있는지 검사
+  // json 내에 access_token 코드 있는지 검사
   if ("access_token" in tokenRequest) {
     const { access_token } = tokenRequest;
     const apiUrl = "https://api.github.com";
@@ -107,8 +107,6 @@ export const finishGithubLogin = async (req, res) => {
       })
     ).json();
 
-    console.log(userData);
-
     // 이메일 데이터만 추출
     const emailData = await (
       await fetch(`${apiUrl}/user/emails`, {
@@ -119,15 +117,42 @@ export const finishGithubLogin = async (req, res) => {
         // per_page: 1,
       })
     ).json();
-    
-    console.log(emailData);
 
     // emailData에서 find() 를 통해 primary, verified 가 true 인지 조건을 찾아 비교.
-    const email = emailData.find(
+    const emailObj = emailData.find(
       (email) => email.primary === true && email.verified === true
     );
-    if (!email) {
+    
+    if (!emailObj) {
       return res.redirect("/login");
+    } else {
+
+      // db 작업
+      // db 접속하여 같은 이메일 주소가 있는지 검색
+      const existingUser = await User.findOne({ email: emailObj.email });
+      
+      // 잇다면 세션에 로그인 정보 박음
+      if (existingUser) {
+        req.session.loggedIn = true;
+        req.session.user = existingUser;
+        return res.redirect("/");
+      } 
+      
+      // 없을 경우 새로 user 계정 db 만든 후 세션에 박음.
+      // 이때 패스워드 없는 경우, 서드 파티 로그인라는거 추측 가능.
+      else {
+        const user = await User.create({
+          name: userData.name,
+          username: userData.login,
+          email: emailObj.email,
+          password: "",
+          socialOnly: true, // 소셜 로그인인지 체크
+          location: userData.location,
+        });
+        req.session.loggedIn = true;
+        req.session.user = user;
+        return res.redirect("/");
+      }
     }
   } else {
     return res.redirect("/login");

@@ -13,12 +13,14 @@ export const postJoin = async (req, res) => {
     });
   }
   const exists = await User.exists({ $or: [{ username }, { email }] });
+
   if (exists) {
     return res.status(400).render("join", {
       pageTitle,
       errorMessage: "This username/email is already taken.",
     });
   }
+
   try {
     await User.create({
       name,
@@ -178,15 +180,45 @@ export const postEdit = async (req, res) => {
     body: { name, email, username, location },
   } = req;
 
-  console.log(_id, name, email);
+  // 메일 중복 검사 
+  if (req.session.user.email !== email) {
 
-  await User.findByIdAndUpdate(_id, {
-    name,
-    email,
-    username,
-    location,
-  });
-  return res.render("edit-profile");
+    const exists = await User.exists({ email });
+
+    if (exists) {
+      console.log("dup email")
+      return res.status(400).render("edit-profile", {
+        errorMessage: "This email is already taken.",
+      });
+    }
+  }
+
+  // 사용자 이름 중복 검사 
+  if (req.session.user.username !== username) {
+
+    console.log(req.session.user.username);
+    const exists = await User.exists({ username });
+
+    if (exists) {
+      console.log("dup name")
+      return res.status(400).render("edit-profile", {
+        errorMessage: "This name is already taken.",
+      });
+    }
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(_id,
+    {
+      name,
+      email,
+      username,
+      location,
+    },
+    { new: true }
+  );
+
+  req.session.user = updatedUser;
+  return res.redirect("/users/edit");
 };
 
 export const see = (req, res) => res.send("See User");

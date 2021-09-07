@@ -178,7 +178,9 @@ export const postEdit = async (req, res) => {
       user: { _id },
     },
     body: { name, email, username, location },
+    file,
   } = req;
+  console.log(file);
 
   // 메일 중복 검사 
   if (req.session.user.email !== email) {
@@ -238,7 +240,6 @@ export const postChangePassword = async (req, res) => {
     },
     body: { oldPassword, newPassword, newPasswordConfirmation },
   } = req;
-
 
   const user = await User.findById(_id);
   const ok = await bcrypt.compare(oldPassword, user.password);

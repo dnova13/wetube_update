@@ -175,12 +175,11 @@ export const postEdit = async (req, res) => {
   // js 표현 이런식으로 _id, name 등의 변수를 req 에서 찾아서 받음.
   const {
     session: {
-      user: { _id },
+      user: { _id, avatarUrl },
     },
     body: { name, email, username, location },
     file,
   } = req;
-  console.log(file);
 
   // 메일 중복 검사 
   if (req.session.user.email !== email) {
@@ -211,6 +210,8 @@ export const postEdit = async (req, res) => {
 
   const updatedUser = await User.findByIdAndUpdate(_id,
     {
+      // 파일이라는 객체 값 유무에 따라 넣을 데이터 결정.
+      avatarUrl: file ? file.path : avatarUrl,
       name,
       email,
       username,

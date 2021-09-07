@@ -166,7 +166,26 @@ export const logout = (req, res) => {
 export const getEdit = (req, res) => {
   return res.render("edit-profile", { pageTitle: "Edit Profile" });
 };
-export const postEdit = (req, res) => {
+
+
+export const postEdit = async (req, res) => {
+
+  // js 표현 이런식으로 _id, name 등의 변수를 req 에서 찾아서 받음.
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { name, email, username, location },
+  } = req;
+
+  console.log(_id, name, email);
+
+  await User.findByIdAndUpdate(_id, {
+    name,
+    email,
+    username,
+    location,
+  });
   return res.render("edit-profile");
 };
 

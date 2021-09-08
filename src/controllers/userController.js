@@ -274,21 +274,23 @@ export const postChangePassword = async (req, res) => {
 
 export const see = async (req, res) => {
   const { id } = req.params;
-  console.log(id)
-  const user = await User.findById(id);
-  
-  // 유저가 존재하는지 유효성 검사
+  // 기능 최적화를 위해서 비디오 업로드 할때마다 
+  // 사용자 db에 해당 비디오의 아이디를 삽입했기 때문에
+  /// 짐 video 에서 populate를 통해 owner 에 사용자 정보를 넣은거 처럼.
+  /// 이제는 user 에 video 스키마를 통해 비디오 리스트를 삽입.
+  const user = await User.findById(id).populate("videos");
+
   if (!user) {
     return res.status(404).render("404", { pageTitle: "User not found." });
   }
-
-  // 이때 id와 user._id  값은 같은 값 즉 둘중 아무거나 써도됨
-  const videos = await Video.find({ owner: id });
+  
   return res.render("users/profile", {
     pageTitle: user.name,
     user,
-    videos,
   });
 };
+
+
+
 
 

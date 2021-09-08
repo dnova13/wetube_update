@@ -54,13 +54,20 @@ export const postUpload = async (req, res) => {
   const { title, description, hashtags } = req.body;
   
   try {
-    await Video.create({
+    const newVideo = await Video.create({ // 생성한 값이 반환하도록 수정
       title,
       description,
       fileUrl, // 업로드 파일 경로 추가
       owner: _id, // owner 에 사용자 아이디 저장하도록 넣음
       hashtags: Video.formatHashtags(hashtags),
     });
+
+    // 기능 최적화를 위해서 업로드 하는 사용자 db에
+    // 업로드한 영상아이디를 같이 삽입
+    const user = await User.findById(_id);
+    user.videos.push(newVideo._id);
+    user.save();
+
     return res.redirect("/");
   } catch (error) {
     console.log(error); 

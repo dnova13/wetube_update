@@ -7,14 +7,11 @@ import {
   postUpload,
   deleteVideo,
 } from "../controllers/videoController";
-
-import {protectorMiddleware} from "../middlewares"
+import { protectorMiddleware, videoUpload } from "../middlewares";
 
 const videoRouter = express.Router();
 
 videoRouter.get("/:id([0-9a-f]{24})", watch);
-
-// 영상 수정 역시 프로텍터해줌.
 videoRouter
   .route("/:id([0-9a-f]{24})/edit")
   .all(protectorMiddleware)
@@ -28,7 +25,6 @@ videoRouter
   .route("/upload")
   .all(protectorMiddleware)
   .get(getUpload)
-  .post(postUpload);
-
+  .post(videoUpload.single("video"), postUpload); // 업로드 기능 추가
 
 export default videoRouter;

@@ -7,14 +7,15 @@ export const home = async (req, res) => {
 };
 
 export const watch = async (req, res) => {
-  const { id } = req.params; // 비디오 아읻 검색
-  const video = await Video.findById(id); 
-  const owner = await User.findById(video.owner); // 비디오에서의 owner 사용자 아이디를 통한 user 검색
+  const { id } = req.params; // 비디오 아이디 검색
+
+  // popluate : join 기능 생각하면된, 
+  const video = await Video.findById(id).populate("owner");
 
   if (!video) {
     return res.render("404", { pageTitle: "Video not found." });
   }
-  return res.render("watch", { pageTitle: video.title, video, owner });
+  return res.render("watch", { pageTitle: video.title, video });
 };
 
 export const getEdit = async (req, res) => {

@@ -1,4 +1,5 @@
 import User from "../models/User";
+import Video from "../models/Video";
 import bcrypt from "bcrypt";
 import fetch from "node-fetch";
 
@@ -270,15 +271,24 @@ export const postChangePassword = async (req, res) => {
   return res.redirect("/users/logout");
 };
 
+
 export const see = async (req, res) => {
   const { id } = req.params;
+  console.log(id)
   const user = await User.findById(id);
+  
+  // 유저가 존재하는지 유효성 검사
   if (!user) {
     return res.status(404).render("404", { pageTitle: "User not found." });
   }
+
+  // 이때 id와 user._id  값은 같은 값 즉 둘중 아무거나 써도됨
+  const videos = await Video.find({ owner: id });
   return res.render("users/profile", {
     pageTitle: user.name,
     user,
+    videos,
   });
 };
+
 

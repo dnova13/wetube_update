@@ -1,4 +1,5 @@
 import Video from "../models/Video";
+import User from "../models/User";
 
 export const home = async (req, res) => {
   const videos = await Video.find({}).sort({ createdAt: "desc" });
@@ -6,12 +7,14 @@ export const home = async (req, res) => {
 };
 
 export const watch = async (req, res) => {
-  const { id } = req.params;
-  const video = await Video.findById(id);
+  const { id } = req.params; // 비디오 아읻 검색
+  const video = await Video.findById(id); 
+  const owner = await User.findById(video.owner); // 비디오에서의 owner 사용자 아이디를 통한 user 검색
+
   if (!video) {
     return res.render("404", { pageTitle: "Video not found." });
   }
-  return res.render("watch", { pageTitle: video.title, video });
+  return res.render("watch", { pageTitle: video.title, video, owner });
 };
 
 export const getEdit = async (req, res) => {
@@ -43,13 +46,18 @@ export const getUpload = (req, res) => {
 };
 
 export const postUpload = async (req, res) => {
+  const {
+    user: { _id }, // 사용자 아이디 추가
+  } = req.session;
   const { path: fileUrl } = req.file; // 업로드 파일
   const { title, description, hashtags } = req.body;
+  
   try {
     await Video.create({
       title,
       description,
       fileUrl, // 업로드 파일 경로 추가
+      owner: _id, // owner 에 사용자 아이디 저장하도록 넣음
       hashtags: Video.formatHashtags(hashtags),
     });
     return res.redirect("/");

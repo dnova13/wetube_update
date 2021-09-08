@@ -66,6 +66,7 @@ export const postLogin = async (req, res) => {
 };
 
 export const startGithubLogin = (req, res) => {
+
   const baseUrl = "https://github.com/login/oauth/authorize";
   const config = {
     client_id: process.env.GH_CLIENT,
@@ -137,16 +138,19 @@ export const finishGithubLogin = async (req, res) => {
       // db 접속하여 같은 이메일 주소가 있는지 검색
       let user = await User.findOne({ email: emailObj.email });
 
+      console.log(userData.name ? userData.name : "");
+      // console.log(emailObj)
+
       // 중복된 코드 수정, 코드 간략화
       if (!user) {
         user = await User.create({
           avatarUrl: userData.avatar_url,
-          name: userData.name,
+          name: userData.name ? userData.name : userData.login, // null일 경우 잇으므로 유효성 체크
           username: userData.login,
           email: emailObj.email,
           password: "",
           socialOnly: true, // 소셜 로그인인지 체크
-          location: userData.location,
+          location: userData.location ? userData.location : "", // null일 경우 잇으므로 유효성 체크
         });
       }
 

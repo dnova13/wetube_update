@@ -1,6 +1,6 @@
 @import "./_variables";
 
 body {
-  background-color: $red; // css 없는 scss 에만 존재하는 문법
-  color: white;
+  background-color: $red;
+  color: $color;
 }

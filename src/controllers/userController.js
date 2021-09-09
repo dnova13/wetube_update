@@ -1,5 +1,4 @@
 import User from "../models/User";
-import Video from "../models/Video";
 import bcrypt from "bcrypt";
 import fetch from "node-fetch";
 
@@ -274,11 +273,15 @@ export const postChangePassword = async (req, res) => {
 
 export const see = async (req, res) => {
   const { id } = req.params;
-  // 기능 최적화를 위해서 비디오 업로드 할때마다 
-  // 사용자 db에 해당 비디오의 아이디를 삽입했기 때문에
-  /// 짐 video 에서 populate를 통해 owner 에 사용자 정보를 넣은거 처럼.
-  /// 이제는 user 에 video 스키마를 통해 비디오 리스트를 삽입.
-  const user = await User.findById(id).populate("videos");
+  
+  // find 검색 조건을 더블 populate 사용하여 상세하게 추가
+  const user = await User.findById(id).populate({
+    path: "videos",
+    populate: {
+      path: "owner",
+      model: "User",
+    },
+  }); 
 
   if (!user) {
     return res.status(404).render("404", { pageTitle: "User not found." });

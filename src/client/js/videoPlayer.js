@@ -10,6 +10,7 @@ const videoContainer = document.getElementById("videoContainer");
 const videoControls = document.getElementById("videoControls");
 
 let controlsTimeout = null;
+let controlsMovementTimeout = null;
 
 // 기본 볼륨 값 설정
 let volumeValue = 0.5;
@@ -97,6 +98,9 @@ const handleFullscreen = () => {
     }
 };
 
+// 숨김 기능이 중복되므로 따로 빼둠.
+const hideControls = () => videoControls.classList.remove("showing");
+
 // 커서가 지정된 영역에서 움직일때
 const handleMouseMove = () => {
 
@@ -105,17 +109,22 @@ const handleMouseMove = () => {
         clearTimeout(controlsTimeout);
         controlsTimeout = null;
     }
+
+    // 만약 마우스가 계속 움직일 경우 타임아웃 아이디 초기화
+    if (controlsMovementTimeout) {
+        clearTimeout(controlsMovementTimeout);
+        controlsMovementTimeout = null;
+    }
+
     videoControls.classList.add("showing");
+    controlsMovementTimeout = setTimeout(hideControls, 3000);
 };
 
 // 커서가 지정된 영역에 벗어날때
 const handleMouseLeave = () => {
-
     // 타임 아웃 아이디 반환
-    controlsTimeout = setTimeout(() => {
-        videoControls.classList.remove("showing");
-    }, 3000);
-};
+    controlsTimeout = setTimeout(hideControls, 3000);
+  };
 
 
 playBtn.addEventListener("click", handlePlayClick);

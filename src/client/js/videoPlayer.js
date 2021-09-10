@@ -4,6 +4,8 @@ const muteBtn = document.getElementById("mute");
 const volumeRange = document.getElementById("volume");
 const currenTime = document.getElementById("currenTime");
 const totalTime = document.getElementById("totalTime");
+const timeline = document.getElementById("timeline");
+
 
 // 기본 볼륨 값 설정
 let volumeValue = 0.5;
@@ -37,7 +39,7 @@ const handleVolumeChange = (event) => {
     const {
         target: { value },
     } = event;
-    
+
     if (video.muted) {
         video.muted = false;
         muteBtn.innerText = "Mute";
@@ -50,28 +52,42 @@ const handleVolumeChange = (event) => {
 
 // 시간 포맷팅
 const formatTime = (seconds) =>
-  new Date(seconds * 1000).toISOString().substr(11, 8);
+    new Date(seconds * 1000).toISOString().substr(11, 8);
 
 
-// 영상의 총 길이 설정
+// 플레이어 이니셜 설정
 const handleLoadedMetadata = () => {
+    /// 총 길이 설정
     totalTime.innerText = formatTime(Math.floor(video.duration));
+    /// 타임라인 최대값 설정.
+    timeline.max = Math.floor(video.duration);
 };
 
-// 현재 영상의 시간 설정.
+// 시간에 따른 영상의 변화 셋팅
 const handleTimeUpdate = () => {
-  currenTime.innerText = formatTime(Math.floor(video.currentTime));
+    /// 현재 영상 시간 설정
+    currenTime.innerText = formatTime(Math.floor(video.currentTime));
+    /// 타임라인 변화 값 설정
+    timeline.value = Math.floor(video.currentTime);
+};
+
+/// 타임 라인 조작 설정.
+const handleTimelineChange = (event) => {
+    const {
+        target: { value },
+    } = event;
+
+    video.currentTime = value;
 };
 
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
-
-// loadedmetadata 비디오를 제외한 메타데이터 길이, 크기등이 실행되는 이벤트가 발생할때, 메소드를 동작시킴
 video.addEventListener("loadedmetadata", handleLoadedMetadata);
-
-// 시간이 변경되는 이벤트가 생길때 동작
 video.addEventListener("timeupdate", handleTimeUpdate);
+
+// 타임 라인 조작 이벤트(range)
+timeline.addEventListener("input", handleTimelineChange);
 
 
 // 새로고침 할경우

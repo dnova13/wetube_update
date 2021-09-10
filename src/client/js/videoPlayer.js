@@ -141,6 +141,18 @@ const handlePlayKey = (e) => {
     }
 }
 
+const handleEnded = () => {
+
+    // 컨테이너 테그에서 data-* 로 박힌 아이디 값을 가지고 옴.
+    const { id } = videoContainer.dataset;
+
+    fetch(`/api/videos/${id}/view`, {
+        method: "POST",
+    });
+};
+
+// 영상 재생이 끝날대 이벤트 동작
+video.addEventListener("ended", handleEnded);
 
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);

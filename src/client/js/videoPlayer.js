@@ -47,14 +47,20 @@ const handleVolumeChange = (event) => {
     video.volume = value;
 };
 
+
+// 시간 포맷팅
+const formatTime = (seconds) =>
+  new Date(seconds * 1000).toISOString().substr(11, 8);
+
+
 // 영상의 총 길이 설정
 const handleLoadedMetadata = () => {
-  totalTime.innerText = Math.floor(video.duration);
+    totalTime.innerText = formatTime(Math.floor(video.duration));
 };
 
 // 현재 영상의 시간 설정.
 const handleTimeUpdate = () => {
-  currenTime.innerText = Math.floor(video.currentTime);
+  currenTime.innerText = formatTime(Math.floor(video.currentTime));
 };
 
 playBtn.addEventListener("click", handlePlayClick);
@@ -66,3 +72,12 @@ video.addEventListener("loadedmetadata", handleLoadedMetadata);
 
 // 시간이 변경되는 이벤트가 생길때 동작
 video.addEventListener("timeupdate", handleTimeUpdate);
+
+
+// 새로고침 할경우
+// JS에서 eventlistener을 추가하기 전에 video가 전부 로딩이 되어서
+// handleLoadedMetadata() 가 아예 불러지지 않음.
+// video.readyState가 4라는 뜻은 video가 충분히 불러와진 상태에서 handleLoadedMetadata() 실행하도록 함.
+if (video.readyState == 4) {
+    handleLoadedMetadata();
+}

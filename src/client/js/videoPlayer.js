@@ -1,8 +1,9 @@
 const video = document.querySelector("video");
 const playBtn = document.getElementById("play");
 const muteBtn = document.getElementById("mute");
-const time = document.getElementById("time");
 const volumeRange = document.getElementById("volume");
+const currenTime = document.getElementById("currenTime");
+const totalTime = document.getElementById("totalTime");
 
 // 기본 볼륨 값 설정
 let volumeValue = 0.5;
@@ -28,7 +29,6 @@ const handleMuteClick = (e) => {
         video.muted = true;
     }
     muteBtn.innerText = video.muted ? "Unmute" : "Mute";
-    // 음소거 버튼시 볼륨 동작 추가
     volumeRange.value = video.muted ? 0 : volumeValue;
 };
 
@@ -37,23 +37,32 @@ const handleVolumeChange = (event) => {
     const {
         target: { value },
     } = event;
-    // 변화된 볼륜 값을 받음.
-
-    // 만약 음소거 상태에서 움직일때 
-    // 음소거 상태 해제
-    // 다른 조건이라면 음향 조절 안되게 막을 수 도 잇음.
+    
     if (video.muted) {
         video.muted = false;
         muteBtn.innerText = "Mute";
     }
 
-    /// 변경된 볼륨값을 기본값으로 재설정.
     volumeValue = value;
-
-    // 변경된 볼률값을 영상 볼륨에 반영.
     video.volume = value;
+};
+
+// 영상의 총 길이 설정
+const handleLoadedMetadata = () => {
+  totalTime.innerText = Math.floor(video.duration);
+};
+
+// 현재 영상의 시간 설정.
+const handleTimeUpdate = () => {
+  currenTime.innerText = Math.floor(video.currentTime);
 };
 
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
+
+// loadedmetadata 비디오를 제외한 메타데이터 길이, 크기등이 실행되는 이벤트가 발생할때, 메소드를 동작시킴
+video.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+// 시간이 변경되는 이벤트가 생길때 동작
+video.addEventListener("timeupdate", handleTimeUpdate);

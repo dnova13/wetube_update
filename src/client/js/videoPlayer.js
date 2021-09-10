@@ -7,7 +7,9 @@ const totalTime = document.getElementById("totalTime");
 const timeline = document.getElementById("timeline");
 const fullScreenBtn = document.getElementById("fullScreen");
 const videoContainer = document.getElementById("videoContainer");
+const videoControls = document.getElementById("videoControls");
 
+let controlsTimeout = null;
 
 // 기본 볼륨 값 설정
 let volumeValue = 0.5;
@@ -94,7 +96,27 @@ const handleFullscreen = () => {
         fullScreenBtn.innerText = "Exit Full Screen";
     }
 };
-  
+
+// 커서가 지정된 영역에서 움직일때
+const handleMouseMove = () => {
+
+    // 타임 아웃 아이디가 null 아닐때 타임아웃 아이디 초기화
+    if (controlsTimeout) {
+        clearTimeout(controlsTimeout);
+        controlsTimeout = null;
+    }
+    videoControls.classList.add("showing");
+};
+
+// 커서가 지정된 영역에 벗어날때
+const handleMouseLeave = () => {
+
+    // 타임 아웃 아이디 반환
+    controlsTimeout = setTimeout(() => {
+        videoControls.classList.remove("showing");
+    }, 3000);
+};
+
 
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
@@ -108,6 +130,9 @@ timeline.addEventListener("input", handleTimelineChange);
 // 풀스크린 클릭 이벤트 동작
 fullScreenBtn.addEventListener("click", handleFullscreen);
 
+/// 컨트롤러 마우스 동작 이벤트
+video.addEventListener("mousemove", handleMouseMove);
+video.addEventListener("mouseleave", handleMouseLeave);
 
 // 새로고침 할경우
 // JS에서 eventlistener을 추가하기 전에 video가 전부 로딩이 되어서

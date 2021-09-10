@@ -5,6 +5,8 @@ const volumeRange = document.getElementById("volume");
 const currenTime = document.getElementById("currenTime");
 const totalTime = document.getElementById("totalTime");
 const timeline = document.getElementById("timeline");
+const fullScreenBtn = document.getElementById("fullScreen");
+const videoContainer = document.getElementById("videoContainer");
 
 
 // 기본 볼륨 값 설정
@@ -80,6 +82,20 @@ const handleTimelineChange = (event) => {
     video.currentTime = value;
 };
 
+// 풀스크린 동작 핸들로
+const handleFullscreen = () => {
+    const fullscreen = document.fullscreenElement;
+
+    if (fullscreen) {
+        document.exitFullscreen(); // 풀스크린 해제
+        fullScreenBtn.innerText = "Enter Full Screen";
+    } else {
+        videoContainer.requestFullscreen(); // 풀스크린 on
+        fullScreenBtn.innerText = "Exit Full Screen";
+    }
+};
+  
+
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
@@ -88,6 +104,9 @@ video.addEventListener("timeupdate", handleTimeUpdate);
 
 // 타임 라인 조작 이벤트(range)
 timeline.addEventListener("input", handleTimelineChange);
+
+// 풀스크린 클릭 이벤트 동작
+fullScreenBtn.addEventListener("click", handleFullscreen);
 
 
 // 새로고침 할경우

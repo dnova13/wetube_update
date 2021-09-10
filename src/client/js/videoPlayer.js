@@ -1,13 +1,17 @@
 const video = document.querySelector("video");
 const playBtn = document.getElementById("play");
+const playBtnIcon = playBtn.querySelector("i"); // 플레이 버튼 태그안에 있는 아이콘 찾음.
 const muteBtn = document.getElementById("mute");
+const muteBtnIcon = muteBtn.querySelector("i"); // 음소거 버튼 태그안에 있는 아이콘 찾음.
 const volumeRange = document.getElementById("volume");
 const currenTime = document.getElementById("currenTime");
 const totalTime = document.getElementById("totalTime");
 const timeline = document.getElementById("timeline");
 const fullScreenBtn = document.getElementById("fullScreen");
+const fullScreenIcon = fullScreenBtn.querySelector("i");
 const videoContainer = document.getElementById("videoContainer");
 const videoControls = document.getElementById("videoControls");
+
 
 let controlsTimeout = null;
 let controlsMovementTimeout = null;
@@ -16,16 +20,19 @@ let controlsMovementTimeout = null;
 let volumeValue = 0.5;
 video.volume = volumeValue;
 
-// 비디오 클릭시 이벤트 설정. 코드 간략화
-const handlePlayClick = (e) => {
 
+const videoPlay = () => {
     if (video.paused) {
         video.play();
     } else {
         video.pause();
     }
+    playBtnIcon.classList = video.paused ? "fas fa-play" : "fas fa-pause";
+}
 
-    playBtn.innerText = video.paused ? "Play" : "Pause";
+// 비디오 클릭시 이벤트 설정. 코드 간략화
+const handlePlayClick = (e) => {
+    videoPlay();
 };
 
 // 음소거 이벤트 메소드
@@ -35,7 +42,9 @@ const handleMuteClick = (e) => {
     } else {
         video.muted = true;
     }
-    muteBtn.innerText = video.muted ? "Unmute" : "Mute";
+    muteBtnIcon.classList = video.muted
+        ? "fas fa-volume-mute"
+        : "fas fa-volume-up";
     volumeRange.value = video.muted ? 0 : volumeValue;
 };
 
@@ -91,10 +100,10 @@ const handleFullscreen = () => {
 
     if (fullscreen) {
         document.exitFullscreen(); // 풀스크린 해제
-        fullScreenBtn.innerText = "Enter Full Screen";
+        fullScreenIcon.classList = "fas fa-expand";
     } else {
         videoContainer.requestFullscreen(); // 풀스크린 on
-        fullScreenBtn.innerText = "Exit Full Screen";
+        fullScreenIcon.classList = "fas fa-compress";
     }
 };
 
@@ -124,13 +133,20 @@ const handleMouseMove = () => {
 const handleMouseLeave = () => {
     // 타임 아웃 아이디 반환
     controlsTimeout = setTimeout(hideControls, 3000);
-  };
+};
+
+const handlePlayKey = (e) => {
+    if (e.code === "Space") {
+        videoPlay();
+    }
+}
 
 
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
-video.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+video.addEventListener("loadeddata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
 
 // 타임 라인 조작 이벤트(range)
@@ -140,8 +156,14 @@ timeline.addEventListener("input", handleTimelineChange);
 fullScreenBtn.addEventListener("click", handleFullscreen);
 
 /// 컨트롤러 마우스 동작 이벤트
-video.addEventListener("mousemove", handleMouseMove);
-video.addEventListener("mouseleave", handleMouseLeave);
+/// 조절 바에서 적용이 안되서 지정 태그 변경 
+videoContainer.addEventListener("mousemove", handleMouseMove);
+videoContainer.addEventListener("mouseleave", handleMouseLeave);
+
+videoContainer.addEventListener("click", handlePlayClick);
+
+document.addEventListener('keydown', handlePlayKey);
+
 
 // 새로고침 할경우
 // JS에서 eventlistener을 추가하기 전에 video가 전부 로딩이 되어서

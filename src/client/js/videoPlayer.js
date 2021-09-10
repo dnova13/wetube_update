@@ -158,7 +158,7 @@ playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
 
-video.addEventListener("loadeddata", handleLoadedMetadata);
+video.addEventListener("loadedmetadata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
 
 // 타임 라인 조작 이벤트(range)

@@ -2,33 +2,38 @@ const startBtn = document.getElementById("startBtn");
 const video = document.getElementById("preview");
 
 let stream;
+let recorder;
+
+const handleDownload = () => {};
 
 const handleStop = () => {
-  startBtn.innerText = "Start Recording";
-  startBtn.removeEventListener("click", handleStop); /// 스탑 이벤트 제거
-  startBtn.addEventListener("click", handleStart); /// 레코딩 이벤트 재삽입
+  startBtn.innerText = "Download Recording";
+  startBtn.removeEventListener("click", handleStop);
+  startBtn.addEventListener("click", handleDownload);
+
+  recorder.stop();
 };
 
 const handleStart = () => {
-    startBtn.innerText = "Start Recording";
-    startBtn.removeEventListener("click", handleStop); /// 스탑 이벤트 제거
-    startBtn.addEventListener("click", handleStart); /// 레코딩 이벤트 재삽입
+  startBtn.innerText = "Stop Recording";
+  startBtn.removeEventListener("click", handleStart);
+  startBtn.addEventListener("click", handleStop);
 
-  const recorder = new MediaRecorder(stream);
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (event) => {
 
-  recorder.ondataavailable = (e) => {
-    console.log("recording done");
-    console.log(e); // blobEvent 받고 
-    console.log(e.data); // data 안에 Blob 객체 잇음.
+    // createObjectURL() 브라우저 메모리에서 가능한 url을 만들어줌.
+    const videoFile = URL.createObjectURL(event.data); 
+    /// URL.createObjectURL() 을 이용하여
+    /// 녹화 완료후 받은 blob 파일을 
+    /// 브라우저에 사용가능한 objectURL 로 만들어줌 (즉 scr 로 만들어줌)
+
+    video.srcObject = null; // 미리보기 비디오 제거
+    video.src = videoFile; // 녹확된 비디오 src 삽입
+    video.loop = true; /// 비디들 반복 재생하게 만듬 ,  기본은 false
+    video.play();
   };
-
-  console.log(recorder); // 1. state : inactive
   recorder.start();
-  console.log(recorder); // 2. state : recoding
-
-  setTimeout(() => {
-    recorder.stop();
-  }, 10000);
 };
 
 const init = async () => {

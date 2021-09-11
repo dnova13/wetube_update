@@ -18,8 +18,8 @@ const handleStart = () => {
 
   recorder.ondataavailable = (e) => {
     console.log("recording done");
-    console.log(e);
-    console.log(e.data);
+    console.log(e); // blobEvent 받고 
+    console.log(e.data); // data 안에 Blob 객체 잇음.
   };
 
   console.log(recorder); // 1. state : inactive

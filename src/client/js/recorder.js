@@ -10,21 +10,26 @@ const handleDownload = async () => {
 
     const ffmpeg = createFFmpeg({
         log: true,
-        corePath: "/static/ffmpeg-core.js",
+        corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js'
     });
-    
+
     await ffmpeg.load();
   
     ffmpeg.FS("writeFile", "recording.webm", await fetchFile(videoFile));
-  
     await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");  
-    
+
+    const mp4File = ffmpeg.FS("readFile", "output.mp4");
+
+    const mp4Blob = new Blob([mp4File.buffer], { type: "video/mp4" });
+  
+    const mp4Url = URL.createObjectURL(mp4Blob);
+      
     // a 태그를 생성
     const a = document.createElement("a");
 
     // videoFrile objectUrl 삽입
-    a.href = videoFile;
-    a.download = "MyRecording.webm";
+    a.href = mp4Url;
+    a.download = "MyRecording.mp4";
     document.body.appendChild(a);
     a.click();
 };

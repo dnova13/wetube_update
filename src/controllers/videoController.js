@@ -15,8 +15,9 @@ export const home = async (req, res) => {
 export const watch = async (req, res) => {
   const { id } = req.params; // 비디오 아이디 검색
 
-  // popluate : join 기능 생각하면된, 
-  const video = await Video.findById(id).populate("owner");
+  // 이제 영상에 comments populate 해줌. 
+  const video = await Video.findById(id).populate("owner").populate("comments");
+  console.log(video);
 
   if (!video) {
     return res.render("404", { pageTitle: "Video not found." });
@@ -175,6 +176,10 @@ export const createComment = async (req, res) => {
     owner: user._id,
     video: id,
   });
-  
+
+  /// db에 저장후 video db 에 저장한 댓글을 푸시함.
+  video.comments.push(comment._id);
+  video.save();
+
   return res.sendStatus(201);
 };

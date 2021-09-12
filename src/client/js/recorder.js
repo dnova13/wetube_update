@@ -14,16 +14,35 @@ const handleDownload = async () => {
     });
 
     await ffmpeg.load();
-  
+
     ffmpeg.FS("writeFile", "recording.webm", await fetchFile(videoFile));
-    await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");  
 
+    // 녹화한 파일 인코딩
+    await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");
+
+    // 썸네일 파일 추출
+    await ffmpeg.run(
+        "-i",
+        "recording.webm",
+        "-ss",
+        "00:00:01",
+        "-frames:v",
+        "1",
+        "thumbnail.jpg"
+    );
+    
+    /// 변환한 아웃풋 파일 가져옴
     const mp4File = ffmpeg.FS("readFile", "output.mp4");
+    const thumbFile = ffmpeg.FS("readFile", "thumbnail.jpg");
 
+    // blob 파일로 변환
     const mp4Blob = new Blob([mp4File.buffer], { type: "video/mp4" });
-  
+    const thumbBlob = new Blob([thumbFile.buffer], { type: "image/jpg" });
+
+    // 파일 url 추출
     const mp4Url = URL.createObjectURL(mp4Blob);
-      
+    const thumbUrl = URL.createObjectURL(thumbBlob);
+
     // a 태그를 생성
     const a = document.createElement("a");
 
@@ -32,6 +51,22 @@ const handleDownload = async () => {
     a.download = "MyRecording.mp4";
     document.body.appendChild(a);
     a.click();
+
+    const thumbA = document.createElement("a");
+    thumbA.href = thumbUrl;
+    thumbA.download = "MyThumbnail.jpg";
+    document.body.appendChild(thumbA);
+    thumbA.click();
+    
+    // unlink 하여 파일을 메모리부터 버리고
+    ffmpeg.FS("unlink", "recording.webm");
+    ffmpeg.FS("unlink", "output.mp4");
+    ffmpeg.FS("unlink", "thumbnail.jpg");
+
+    // URL.revokeObjectURL  파일 obejectUrl 도 삭제
+    URL.revokeObjectURL(mp4Url);
+    URL.revokeObjectURL(thumbUrl); 
+    URL.revokeObjectURL(videoFile);
 };
 
 

@@ -62,6 +62,7 @@ export const postLogin = async (req, res) => {
   }
   req.session.loggedIn = true;
   req.session.user = user;
+
   return res.redirect("/");
 };
 
@@ -165,9 +166,16 @@ export const finishGithubLogin = async (req, res) => {
 
 // 로그 아웃 동작 세션 제거 
 export const logout = (req, res) => {
-  req.session.destroy(); 
+  
+  // 세션이 지워져서 message 보내기 안되므로
+  // 로그인 관련된 정보 삭제
+  // req.session.destroy(); 
+  delete req.session.user;
+  delete req.session.loggedIn;
+
   req.flash("info", "Bye Bye");
-  return res.redirect("/");
+
+  return res.redirect("/")
 };
 
 export const getEdit = (req, res) => {

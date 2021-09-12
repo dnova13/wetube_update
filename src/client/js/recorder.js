@@ -1,12 +1,33 @@
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-const startBtn = document.getElementById("startBtn");
+const actionBtn = document.getElementById("actionBtn"); 
 const video = document.getElementById("preview");
 
 let stream;
 let recorder;
 let videoFile;
 
+// 변환을 위한 파일 이름 지정.
+const files = {
+    input: "recording.webm",
+    output: "output.mp4",
+    thumb: "thumbnail.jpg",
+};
+
+// 페이크 ancho 만들어서 다운로드한는거 함수화
+const downloadFile = (fileUrl, fileName) => {
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+};
+
 const handleDownload = async () => {
+
+    /// 파일 변환 중으로 버튼 변경하고 이벤트 동작들 제거하여 사용못하게 함.
+    actionBtn.removeEventListener("click", handleDownload);
+    actionBtn.innerText = "Transcoding...";
+    actionBtn.disabled = true;
 
     const ffmpeg = createFFmpeg({
         log: true,
@@ -15,25 +36,25 @@ const handleDownload = async () => {
 
     await ffmpeg.load();
 
-    ffmpeg.FS("writeFile", "recording.webm", await fetchFile(videoFile));
+    ffmpeg.FS("writeFile", files.input, await fetchFile(videoFile));
 
     // 녹화한 파일 인코딩
-    await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");
+    await ffmpeg.run("-i", files.input, "-r", "60", files.output);
 
     // 썸네일 파일 추출
     await ffmpeg.run(
         "-i",
-        "recording.webm",
+        files.input,
         "-ss",
         "00:00:01",
         "-frames:v",
         "1",
-        "thumbnail.jpg"
+        files.output
     );
-    
+
     /// 변환한 아웃풋 파일 가져옴
-    const mp4File = ffmpeg.FS("readFile", "output.mp4");
-    const thumbFile = ffmpeg.FS("readFile", "thumbnail.jpg");
+    const mp4File = ffmpeg.FS("readFile", files.output);
+    const thumbFile = ffmpeg.FS("readFile", files.thumb);
 
     // blob 파일로 변환
     const mp4Blob = new Blob([mp4File.buffer], { type: "video/mp4" });
@@ -46,42 +67,40 @@ const handleDownload = async () => {
     // a 태그를 생성
     const a = document.createElement("a");
 
-    // videoFrile objectUrl 삽입
-    a.href = mp4Url;
-    a.download = "MyRecording.mp4";
-    document.body.appendChild(a);
-    a.click();
+    // 파일 다운로드
+    downloadFile(mp4Url, "MyRecording.mp4");
+    downloadFile(thumbUrl, "MyThumbnail.jpg");
 
-    const thumbA = document.createElement("a");
-    thumbA.href = thumbUrl;
-    thumbA.download = "MyThumbnail.jpg";
-    document.body.appendChild(thumbA);
-    thumbA.click();
-    
     // unlink 하여 파일을 메모리부터 버리고
-    ffmpeg.FS("unlink", "recording.webm");
-    ffmpeg.FS("unlink", "output.mp4");
-    ffmpeg.FS("unlink", "thumbnail.jpg");
+    ffmpeg.FS("unlink", files.input);
+    ffmpeg.FS("unlink", files.output);
+    ffmpeg.FS("unlink", files.thumb);
 
     // URL.revokeObjectURL  파일 obejectUrl 도 삭제
     URL.revokeObjectURL(mp4Url);
-    URL.revokeObjectURL(thumbUrl); 
+    URL.revokeObjectURL(thumbUrl);
     URL.revokeObjectURL(videoFile);
+    
+    // 최종 다운 로드 완료 후
+    // 이전 녹화 상태로 초기화
+    actionBtn.disabled = false;
+    actionBtn.innerText = "Record Again";
+    actionBtn.addEventListener("click", handleStart);
 };
 
 
 const handleStop = () => {
-    startBtn.innerText = "Download Recording";
-    startBtn.removeEventListener("click", handleStop);
-    startBtn.addEventListener("click", handleDownload);
+    actionBtn.innerText = "Download Recording";
+    actionBtn.removeEventListener("click", handleStop);
+    actionBtn.addEventListener("click", handleDownload);
 
     recorder.stop();
 };
 
 const handleStart = () => {
-    startBtn.innerText = "Stop Recording";
-    startBtn.removeEventListener("click", handleStart);
-    startBtn.addEventListener("click", handleStop);
+    actionBtn.innerText = "Stop Recording";
+    actionBtn.removeEventListener("click", handleStart);
+    actionBtn.addEventListener("click", handleStop);
 
     /// 영상 mimeType 지정.
     recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
@@ -112,4 +131,4 @@ const init = async () => {
 
 init();
 
-startBtn.addEventListener("click", handleStart);
+actionBtn.addEventListener("click", handleStart);

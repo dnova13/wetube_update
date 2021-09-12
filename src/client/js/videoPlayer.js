@@ -172,7 +172,7 @@ fullScreenBtn.addEventListener("click", handleFullscreen);
 videoContainer.addEventListener("mousemove", handleMouseMove);
 videoContainer.addEventListener("mouseleave", handleMouseLeave);
 
-videoContainer.addEventListener("click", handlePlayClick);
+video.addEventListener("click", handlePlayClick);
 
 document.addEventListener('keydown', handlePlayKey);
 

@@ -7,6 +7,9 @@ export const home = async (req, res) => {
   const videos = await Video.find({})
     .sort({ createdAt: "desc" })
     .populate("owner");
+  
+    console.log(videos);
+
   return res.render("home", { pageTitle: "Home", videos });
 };
 
@@ -75,14 +78,15 @@ export const postUpload = async (req, res) => {
   const {
     user: { _id }, // 사용자 아이디 추가
   } = req.session;
-  const { path: fileUrl } = req.file; // 업로드 파일
+  const { video, thumb } = req.files; // 업로드 파일
   const { title, description, hashtags } = req.body;
   
   try {
     const newVideo = await Video.create({ // 생성한 값이 반환하도록 수정
       title,
       description,
-      fileUrl, // 업로드 파일 경로 추가
+      fileUrl: video[0].path,
+      thumbUrl: thumb[0].path,
       owner: _id, // owner 에 사용자 아이디 저장하도록 넣음
       hashtags: Video.formatHashtags(hashtags),
     });

@@ -1,5 +1,5 @@
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-const actionBtn = document.getElementById("actionBtn"); 
+const actionBtn = document.getElementById("actionBtn");
 const video = document.getElementById("preview");
 
 let stream;
@@ -49,7 +49,7 @@ const handleDownload = async () => {
         "00:00:01",
         "-frames:v",
         "1",
-        files.output
+        files.thumb
     );
 
     /// 변환한 아웃풋 파일 가져옴
@@ -80,7 +80,7 @@ const handleDownload = async () => {
     URL.revokeObjectURL(mp4Url);
     URL.revokeObjectURL(thumbUrl);
     URL.revokeObjectURL(videoFile);
-    
+
     // 최종 다운 로드 완료 후
     // 이전 녹화 상태로 초기화
     actionBtn.disabled = false;
@@ -89,18 +89,18 @@ const handleDownload = async () => {
 };
 
 
-const handleStop = () => {
+/* const handleStop = () => {
     actionBtn.innerText = "Download Recording";
     actionBtn.removeEventListener("click", handleStop);
     actionBtn.addEventListener("click", handleDownload);
 
     recorder.stop();
-};
+}; */
 
 const handleStart = () => {
-    actionBtn.innerText = "Stop Recording";
+    actionBtn.innerText = "Recording";
+    actionBtn.disabled = true;
     actionBtn.removeEventListener("click", handleStart);
-    actionBtn.addEventListener("click", handleStop);
 
     /// 영상 mimeType 지정.
     recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
@@ -108,22 +108,29 @@ const handleStart = () => {
 
         // createObjectURL() 브라우저 메모리에서 가능한 url을 만들어줌.
         videoFile = URL.createObjectURL(event.data);
-        /// URL.createObjectURL() 을 이용하여
-        /// 녹화 완료후 받은 blob 파일을 
-        /// 브라우저에 사용가능한 objectURL 로 만들어줌 (즉 scr 로 만들어줌)
-
         video.srcObject = null; // 미리보기 비디오 제거
         video.src = videoFile; // 녹확된 비디오 src 삽입
         video.loop = true; /// 비디들 반복 재생하게 만듬 ,  기본은 false
         video.play();
+
+        actionBtn.innerText = "Download";
+        actionBtn.disabled = false;
+        actionBtn.addEventListener("click", handleDownload);
     };
     recorder.start();
+
+    setTimeout(() => {
+        recorder.stop();
+    }, 5000);
 };
 
 const init = async () => {
     stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
-        video: true,
+        video: {
+            width: 1024,
+            height: 576,
+        },
     });
     video.srcObject = stream;
     video.play();

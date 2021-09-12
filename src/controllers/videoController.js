@@ -84,7 +84,7 @@ export const postUpload = async (req, res) => {
   } = req.session;
   const { video, thumb } = req.files; // 업로드 파일
   const { title, description, hashtags } = req.body;
-  
+
   try {
     const newVideo = await Video.create({ // 생성한 값이 반환하도록 수정
       title,
@@ -103,7 +103,7 @@ export const postUpload = async (req, res) => {
 
     return res.redirect("/");
   } catch (error) {
-    console.log(error); 
+    console.log(error);
     return res.status(400).render("upload", {
       pageTitle: "Upload Video",
       errorMessage: error._message,
@@ -148,7 +148,7 @@ export const search = async (req, res) => {
 export const registerView = async (req, res) => {
   const { id } = req.params;
   const video = await Video.findById(id);
-  
+
   if (!video) {
     return res.sendStatus(404);
   }
@@ -177,9 +177,39 @@ export const createComment = async (req, res) => {
     video: id,
   });
 
+  const commentUser = await User.findById(user._id);
+
   /// db에 저장후 video db 에 저장한 댓글을 푸시함.
   video.comments.push(comment._id);
   video.save();
 
+  commentUser.comments.push(comment._id);
+  commentUser.save();
+
   return res.status(201).json({ newCommentId: comment._id });
 };
+
+export const deleteComment = async (req, res) => {
+  const { params: { id },
+    body: { videoId },
+    session: { user }
+  } = req;
+
+  const video = await Video.findById(videoId);
+  const commentUser = await User.findById(user._id);
+
+  if (commentUser.comments.indexOf(id) < 0) {
+    req.flash("info", "Not authorized");
+    return res.sendStatus(403);
+  }
+
+  commentUser.comments.splice(commentUser.comments.indexOf(id), 1);
+  video.comments.splice(video.comments.indexOf(id), 1);
+
+  await video.save();
+  await commentUser.save();
+  await Comment.findByIdAndDelete(id);
+
+  return res.sendStatus(201);
+
+}

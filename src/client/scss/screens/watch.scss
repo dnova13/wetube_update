@@ -33,3 +33,8 @@
     margin-bottom: 10px;
   }
 }
+
+div.video__comments > ul > li > span.deleteBtn {
+  cursor: pointer;
+  float:right;
+}

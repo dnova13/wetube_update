@@ -39,6 +39,7 @@ export const getEdit = async (req, res) => {
 
   /// 해당 사용자만 수정할 수 있게 유효성 검사
   if (String(video.owner) !== String(_id)) {
+    req.flash("error", "Not authorized");
     return res.status(403).redirect("/");
   }
 
@@ -54,6 +55,7 @@ export const postEdit = async (req, res) => {
   const video = await Video.exists({ _id: id });
 
   if (!video) {
+    req.flash("error", "You are not the the owner of the video.");
     return res.status(404).render("404", { pageTitle: "Video not found." });
   }
 

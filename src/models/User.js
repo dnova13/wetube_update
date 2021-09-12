@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String },
   name: { type: String, required: true },
   location: String,
-  videos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Video" }], // 배열로 참조하는 비디오 스키마 추가
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+  videos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Video" }],
 });
 
 userSchema.pre("save", async function () {

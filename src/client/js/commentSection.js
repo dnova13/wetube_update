@@ -16,6 +16,7 @@ const handleSubmit = (event) => {
     },
     body: JSON.stringify({ text }), // 객체를 string 화
   });
+  textarea.value = "";
 };
 
 if (form) {

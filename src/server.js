@@ -8,6 +8,7 @@ import userRouter from "./routers/userRouter";
 import apiRouter from "./routers/apiRouter";
 import { localsMiddleware } from "./middlewares";
 import flash from "express-flash";
+import helmet from "helmet";
 
 const app = express();
 const logger = morgan("dev");
@@ -30,12 +31,16 @@ app.use(
 app.use(flash());
 app.use(localsMiddleware);
 app.use("/uploads", express.static("uploads"));
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 
 app.use((req, res, next) => {
   res.header("Cross-Origin-Embedder-Policy", "require-corp");
   res.header("Cross-Origin-Opener-Policy", "same-origin");
   next();
 });
+
 app.use("/static", express.static("assets"));
 app.use("/", rootRouter);
 app.use("/videos", videoRouter);

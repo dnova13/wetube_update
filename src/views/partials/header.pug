@@ -15,13 +15,15 @@ header
                     a(href="/users/logout")  Log Out
                 li
                     a(href=`/users/${loggedInUser._id}`)
+                        img.header__avatar( crossorigin="anonymous" src="https://nyaa.si/static/img/icons/nyaa/1_4.png")
                         if loggedInUser.avatarUrl === ""
                             span 😀
                         else
-                            if loggedInUser.avatarUrl.substr(0,4).includes("http")
-                                img.header__avatar(src=loggedInUser.avatarUrl)
-                            else    
-                                img.header__avatar(src="/" + loggedInUser.avatarUrl)
+                            if loggedInUser.avatarUrl
+                                if loggedInUser.avatarUrl.substr(0,4).includes("http")
+                                    img.header__avatar(src=loggedInUser.avatarUrl)
+                                else    
+                                    img.header__avatar(src="/" + loggedInUser.avatarUrl)
             else
                 li
                     a(href="/login")  Login                        

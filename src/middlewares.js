@@ -14,6 +14,7 @@ const s3 = new aws.S3({
 const muler3Storage = multerS3({
   s3: s3,
   bucket: "youtube-clone-upload",
+  acl: "public-read",
 });
 
 export const localsMiddleware = (req, res, next) => {
@@ -48,6 +49,7 @@ export const publicOnlyMiddleware = (req, res, next) => {
   }
 };
 
+// s3를 쓰므로 이제 dest가 저장 우선이 아닌 storage : muler3Storage 에 저장함.muler3Storage
 export const avatarUpload = multer({
   dest: "uploads/avatars/",
   limits: {
@@ -55,6 +57,7 @@ export const avatarUpload = multer({
   },
   storage: muler3Storage,
 });
+
 export const videoUpload = multer({
   dest: "uploads/videos/",
   limits: {

@@ -224,7 +224,7 @@ export const postEdit = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(_id,
     {
       // 파일이라는 객체 값 유무에 따라 넣을 데이터 결정.
-      avatarUrl: file ? file.path : avatarUrl,
+      avatarUrl: file ? file.location : avatarUrl,
       name,
       email,
       username,

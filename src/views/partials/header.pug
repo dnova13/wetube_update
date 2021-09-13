@@ -22,7 +22,8 @@ header
                                 if loggedInUser.avatarUrl.substr(0,4).includes("http")
                                     img.header__avatar(src=loggedInUser.avatarUrl)
                                 else    
-                                    img.header__avatar(src="/" + loggedInUser.avatarUrl)
+                                    //- img.header__avatar(src="/" + loggedInUser.avatarUrl)
+                                    img.header__avatar(src=loggedInUser.avatarUrl)
             else
                 li
                     a(href="/login")  Login                        

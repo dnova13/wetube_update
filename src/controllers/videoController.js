@@ -93,8 +93,8 @@ export const postUpload = async (req, res) => {
     const newVideo = await Video.create({ // 생성한 값이 반환하도록 수정
       title,
       description,
-      fileUrl: video[0].path,
-      thumbUrl: thumb[0].path,
+      fileUrl: video[0].location,
+      thumbUrl: thumb[0].location,
       owner: _id, // owner 에 사용자 아이디 저장하도록 넣음
       hashtags: Video.formatHashtags(hashtags),
     });

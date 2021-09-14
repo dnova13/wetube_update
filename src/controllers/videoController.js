@@ -47,9 +47,7 @@ export const getEdit = async (req, res) => {
 };
 
 export const postEdit = async (req, res) => {
-
-  console.log("!!!!!!!")
-
+  
   const { id } = req.params;
   const {
     user: { _id },

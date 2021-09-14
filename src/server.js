@@ -31,12 +31,12 @@ app.use(
 app.use(flash());
 app.use(localsMiddleware);
 app.use("/uploads", express.static("uploads"));
-// app.use(helmet({
-//   contentSecurityPolicy: false,
-// }));
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 
 app.use((req, res, next) => {
-  
+  // res.header('content-security-policy', "default-src 'none'; img-src 'self'; script-src 'self'");
   // res.header("Cross-Origin-Embedder-Policy", "require-corp");
   // res.header("Cross-Origin-Opener-Policy", "same-origin");
   next();

@@ -31,9 +31,9 @@ app.use(
 app.use(flash());
 app.use(localsMiddleware);
 app.use("/uploads", express.static("uploads"));
-// app.use(helmet({
-//   contentSecurityPolicy: false,
-// }));
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 
 // app.use((req, res, next) => {
 //   res.header("Cross-Origin-Embedder-Policy", "require-corp");

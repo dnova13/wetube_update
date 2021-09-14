@@ -47,7 +47,7 @@ export const getEdit = async (req, res) => {
 };
 
 export const postEdit = async (req, res) => {
-  
+
   const { id } = req.params;
   const {
     user: { _id },
@@ -89,13 +89,14 @@ export const postUpload = async (req, res) => {
   } = req.session;
   const { video, thumb } = req.files; // 업로드 파일
   const { title, description, hashtags } = req.body;
+  const isHeroku = process.env.NODE_ENV === "production";
 
   try {
     const newVideo = await Video.create({ // 생성한 값이 반환하도록 수정
       title,
       description,
-      fileUrl: video[0].location,
-      thumbUrl: thumb[0].location,
+      fileUrl: isHeroku ? video[0].location : video[0].path,
+      thumbUrl: isHeroku ? thumb[0].location : video[0].path,
       owner: _id, // owner 에 사용자 아이디 저장하도록 넣음
       hashtags: Video.formatHashtags(hashtags),
     });

@@ -2,6 +2,8 @@ import multer from "multer";
 import multerS3 from "multer-s3";
 import aws from "aws-sdk";
 
+const isHeroku = process.env.NODE_ENV === "production";
+
 // aws s3 setting
 const s3 = new aws.S3({
   credentials: {
@@ -11,9 +13,15 @@ const s3 = new aws.S3({
 });
 
 // multer s3 setting
-const muler3Storage = multerS3({
+const s3ImageUploader = multerS3({
   s3: s3,
-  bucket: "youtube-clone-upload",
+  bucket: "wetubeee/images",
+  acl: "public-read",
+});
+
+const s3VideoUploader = multerS3({
+  s3: s3,
+  bucket: "wetubeee/videos",
   acl: "public-read",
 });
 
@@ -21,6 +29,7 @@ export const localsMiddleware = (req, res, next) => {
   res.locals.loggedIn = Boolean(req.session.loggedIn);
   res.locals.siteName = "Wetube";
   res.locals.loggedInUser = req.session.user || {};
+  res.locals.isHeroku = isHeroku;
   next();
 };
 
@@ -52,7 +61,7 @@ export const avatarUpload = multer({
   limits: {
     fileSize: 3000000,
   },
-  storage: muler3Storage,
+  storage: isHeroku ? s3ImageUploader : undefined,
 });
 
 export const videoUpload = multer({
@@ -60,5 +69,5 @@ export const videoUpload = multer({
   limits: {
     fileSize: 20000000, // 단위는 byte
   },
-  storage: muler3Storage,
+  storage: isHeroku ? s3VideoUploader : undefined,
 });

@@ -15,13 +15,13 @@ const s3 = new aws.S3({
 // multer s3 setting
 const s3ImageUploader = multerS3({
   s3: s3,
-  bucket: "wetubeee/images",
+  bucket: "youtube-clone-upload/images",
   acl: "public-read",
 });
 
 const s3VideoUploader = multerS3({
   s3: s3,
-  bucket: "wetubeee/videos",
+  bucket: "youtube-clone-upload/videos",
   acl: "public-read",
 });
 

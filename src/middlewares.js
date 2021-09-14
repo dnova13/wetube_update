@@ -14,7 +14,7 @@ const s3 = new aws.S3({
 const muler3Storage = multerS3({
   s3: s3,
   bucket: "youtube-clone-upload",
-  acl: "public-read",
+  // acl: "public-read",
 });
 
 export const localsMiddleware = (req, res, next) => {

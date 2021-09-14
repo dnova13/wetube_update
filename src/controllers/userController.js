@@ -185,7 +185,7 @@ export const getEdit = (req, res) => {
 
 export const postEdit = async (req, res) => {
 
-  res.header('content-security-policy', "default-src 'none'; img-src 'self'; script-src 'self'");
+  // res.header('content-security-policy', "default-src 'none'; img-src 'self'; script-src 'self'");
 
   // js 표현 이런식으로 _id, name 등의 변수를 req 에서 찾아서 받음.
   const {

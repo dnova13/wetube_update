@@ -52,7 +52,7 @@ export const avatarUpload = multer({
   limits: {
     fileSize: 3000000,
   },
-  storage: muler3Storage,
+  // storage: muler3Storage,
 });
 
 export const videoUpload = multer({

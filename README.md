@@ -15,3 +15,6 @@
 /videos/:id/edit -> Edit Video
 /videos/:id/delete -> Delete Video
 /videos/upload -> Upload Video
+
+# domain
+ https://youtube-clone-app-1.herokuapp.com/
